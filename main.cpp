@@ -61,8 +61,8 @@ int main(){
 		cout<<"1. Insert an element"<<endl;
 		cout<<"2. Delete an element"<<endl;
 		cout<<"3. Search for an element"<<endl;
-		cout<<"4.Print an image of the tree"<<endl;
-		cout<<"5.Insert a series of elements"<<endl;
+		cout<<"4. Print an image of the tree"<<endl;
+		cout<<"5. Insert a series of elements"<<endl;
 		cout<<"\nPress 0 to quit.";
 		cout<<"\nEnter Your Choice: ";
 		cin>>choice;
@@ -94,7 +94,7 @@ int main(){
 				cout<<"The image will be named graph.png and will be present in the same path"<<endl;
 				tree->AVL_Print(str);
 				break;
-			case 11:
+			case 5:
 				cout<<"Enter the number of elements you want to insert: ";
 				cin>>element;
 				cout<<"Insert all the elements:"<<endl;
