@@ -7,12 +7,21 @@ class AVL_Node{
 		int key;
 		int bf; //balance factor bf = height(left subtree) - height(right subtree)
 		AVL_Node *LChild, *RChild;
+	public:
+		AVL_Node(int k){
+			key = k;
+			bf = 0;
+			LChild = NULL;
+			RChild = NULL;
+		}
 	friend class AVL_Tree;
 };
 
 class AVL_Tree{
 	private:
 		AVL_Node *root;
+		AVL_Node * insert(AVL_Node *root, int k);
+		int printTreeUtil(AVL_Node* node, FILE *fptr);
 	public:
 		AVL_Tree();
 		AVL_Tree(const AVL_Tree &T);
@@ -25,7 +34,7 @@ class AVL_Tree{
 };
 
 AVL_Tree::AVL_Tree(){
-	
+	root = NULL;
 }
 
 AVL_Tree::AVL_Tree(const AVL_Tree &T){
@@ -34,8 +43,22 @@ AVL_Tree::AVL_Tree(const AVL_Tree &T){
 AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
 	
 }
+
+AVL_Node * AVL_Tree::insert(AVL_Node *root, int k){
+	if(root == NULL)
+		return new AVL_Node(k);
+	if(k < root->key)
+		root->LChild = insert(root->LChild,k);
+	if(k > root->key)
+		root->RChild = insert(root->RChild,k);
+	return root;
+}
+
 void AVL_Tree::AVL_Insert(int k){
-	
+	if(root == NULL)
+		root = new AVL_Node(k);
+	else
+		root = insert(root,k);
 }
 void AVL_Tree::AVL_Delete(int k){
 	
@@ -43,8 +66,30 @@ void AVL_Tree::AVL_Delete(int k){
 bool AVL_Tree::AVL_Search(int k){
 	
 }
-void AVL_Tree::AVL_Print(const char *filename){
+
+int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
+	fprintf(fptr,"node%d [label = \"<f0> | <f1> %d | <f2>\"];\n",node->key,node->key);
+	if(node->LChild != NULL){
+		printTreeUtil(node->LChild, fptr);
+		fprintf(fptr,"\"node%d\":f0 -> \"node%d\":f1;\n",node->key,node->LChild->key);
+	}
+		
+	if(node->RChild != NULL){
+		printTreeUtil(node->RChild, fptr);
+		fprintf(fptr,"\"node%d\":f2 -> \"node%d\":f1;\n",node->key,node->RChild->key);
+	}
 	
+	return node->key;
+}
+
+void AVL_Tree::AVL_Print(const char *filename){
+	FILE *fptr;
+	fptr = fopen(filename,"w");
+	fprintf(fptr,"digraph G {\n");
+	fprintf(fptr,"node [shape = record,height=.1];\n");
+	printTreeUtil(root, fptr);
+	fprintf(fptr,"}");
+	fclose(fptr);
 }
 AVL_Tree::~AVL_Tree(){
 	
