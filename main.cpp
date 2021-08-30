@@ -1,3 +1,9 @@
+
+/*
+ * TODO:
+ * 1. On empty tree if we make a print tree operation, program crashes!
+ */
+
 #include<iostream>
 
 using namespace std;
@@ -20,7 +26,6 @@ class AVL_Node{
 class AVL_Tree{
 	private:
 		AVL_Node *root;
-		AVL_Node * insert(AVL_Node *root, int k);
 		int printTreeUtil(AVL_Node* node, FILE *fptr);
 	public:
 		AVL_Tree();
@@ -44,22 +49,116 @@ AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
 	
 }
 
-AVL_Node * AVL_Tree::insert(AVL_Node *root, int k){
-	if(root == NULL)
-		return new AVL_Node(k);
-	if(k < root->key)
-		root->LChild = insert(root->LChild,k);
-	if(k > root->key)
-		root->RChild = insert(root->RChild,k);
-	return root;
+void AVL_Tree::AVL_Insert(int k){
+	if(root == NULL){
+		root = new AVL_Node(k);
+		return;
+	}
+	AVL_Node *P,*S,*Q, *R;
+	AVL_Node *T = new AVL_Node(-1);
+	T->RChild = root;
+	S = P = root;
+	bool flag = false;
+	int a;
+	while(k != P->key){
+		if(k < P->key){
+			Q = P->LChild;
+			if(Q == NULL){
+				Q = new AVL_Node(k);
+				P->LChild = Q;
+				flag = true;
+				break;
+			}else if(Q->bf != 0){
+				T = P;
+				S = Q;
+			}
+			P = Q;
+		}else if(k > P->key){
+			Q = P->RChild;
+			if(Q == NULL){
+				Q = new AVL_Node(k);
+				P->RChild = Q;
+				flag = true;
+				break;
+			}else if(Q->bf != 0){
+				T = P;
+				S = Q;
+			}
+			P = Q;
+		}	
+	}
+	if(flag == false){
+		throw "Element Already Exists Exception!";
+	}
+	if(k < S->key){
+		R = P = S->LChild;
+		a = -1;
+	}else{
+		R = P = S->RChild;
+		a = 1;
+	}
+	while(P != Q){
+		if(k < P->key){
+			P->bf = -1;
+			P = P->LChild;
+		}else if(k > P->key){
+			P->bf = 1;
+			P = P->RChild;
+		}
+	}
+	if(S->bf == 0){
+		S->bf = a;
+		return;
+	}
+	else if(S->bf == -a){
+		S->bf = 0;
+		return;
+	}else if(S->bf == a){
+		if(R->bf == a){
+			//A8
+			P = R;
+			if(a == -1){
+				S->LChild = R->RChild;
+				R->RChild = S;
+			}else if(a == 1){
+				S->RChild = R->LChild;
+				R->LChild = S;
+			}
+			S->bf = R->bf = 0;
+		}else if(R->bf == -a){
+			//A9
+			if(a == -1){
+				P = R->RChild;
+				R->RChild = P->LChild;
+				P->LChild = R;
+				S->LChild = P->RChild;
+				P->RChild = S;
+			}else if(a == 1){
+				P = R->LChild;
+				R->LChild = P->RChild;
+				P->RChild = R;
+				S->RChild = P->LChild;
+				P->LChild = S;
+			}
+			if(P->bf == a){
+				S->bf = -a;
+				R->bf = 0;
+			}else if(P->bf == 0){
+				S->bf = 0;
+				R->bf = 0;
+			}else if(a == 1){
+				S->bf = 0;
+				R->bf = a;
+			}
+			P->bf = 0;
+		}
+	}
+	if(S == T->RChild)
+		T->RChild = P;
+	else
+		T->LChild = P;
 }
 
-void AVL_Tree::AVL_Insert(int k){
-	if(root == NULL)
-		root = new AVL_Node(k);
-	else
-		root = insert(root,k);
-}
 void AVL_Tree::AVL_Delete(int k){
 	
 }
@@ -68,7 +167,7 @@ bool AVL_Tree::AVL_Search(int k){
 }
 
 int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
-	fprintf(fptr,"node%d [label = \"<f0> | <f1> %d | <f2>\"];\n",node->key,node->key);
+	fprintf(fptr,"node%d [label = \"<f0> | <f1> %d / %d | <f2>\"];\n",node->key,node->key, node->bf);
 	if(node->LChild != NULL){
 		printTreeUtil(node->LChild, fptr);
 		fprintf(fptr,"\"node%d\":f0 -> \"node%d\":f1;\n",node->key,node->LChild->key);
