@@ -1,7 +1,7 @@
 
 /*
  * TODO:
- * 1. On empty tree if we make a print tree operation, program crashes!
+ * 1. Handle reverse bf
  */
 
 #include<iostream>
@@ -182,6 +182,10 @@ int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
 }
 
 void AVL_Tree::AVL_Print(const char *filename){
+	if(root == NULL){
+		cout<<"The Tree is empty, so nothing will be generated!\n";
+	}
+		return;
 	FILE *fptr;
 	fptr = fopen(filename,"w");
 	fprintf(fptr,"digraph G {\n");
