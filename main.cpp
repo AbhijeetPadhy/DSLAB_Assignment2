@@ -43,7 +43,8 @@ class AVL_Tree{
 		AVL_Node *root;
 		int printTreeUtil(AVL_Node* node, FILE *fptr);
 		AVL_Node* AVL_Delete_util(AVL_Node *, int k);
-		bool if_height_reduced;
+		bool AVL_Search_util(AVL_Node *node, int k);
+		AVL_Node* AVL_Clone(AVL_Node *node);
 	public:
 		AVL_Tree();
 		AVL_Tree(const AVL_Tree &T);
@@ -57,11 +58,23 @@ class AVL_Tree{
 
 AVL_Tree::AVL_Tree(){
 	root = NULL;
-	if_height_reduced = false;
 }
 
-AVL_Tree::AVL_Tree(const AVL_Tree &T){
+AVL_Node* AVL_Tree::AVL_Clone(AVL_Node *node){
+	if(node == NULL)
+		return NULL;
+	AVL_Node *new_node = new AVL_Node(node->key);
+	new_node->bf = node->bf;
+	new_node->LChild = AVL_Clone(node->LChild);
+	new_node->RChild = AVL_Clone(node->RChild);
 	
+	return new_node;
+}
+
+// copy constructor
+AVL_Tree::AVL_Tree(const AVL_Tree &T){
+	root = NULL;
+	root = AVL_Clone(T.root);
 }
 AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
 	
@@ -434,8 +447,18 @@ void AVL_Tree::AVL_Delete(int k){
     delete(dummy);
 }
 
+bool AVL_Tree::AVL_Search_util(AVL_Node *node, int k){
+	if(node == NULL)
+		return false;
+	if(node->key == k)
+		return true;
+	if(k < node->key)
+		return AVL_Search_util(node->LChild, k);
+	return AVL_Search_util(node->RChild, k);
+}
+
 bool AVL_Tree::AVL_Search(int k){
-	
+	return AVL_Search_util(root,k);
 }
 
 int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
@@ -474,6 +497,7 @@ int main(){
 	int choice = -1;
 	int element = -1, element2=-1;
 	char str[] = "graph.gv";
+	AVL_Tree *clone;
 	AVL_Tree *tree = new AVL_Tree();
 	do{
 		cout<<"\nThis is an implementation of AVL Tree"<<endl;
@@ -483,6 +507,7 @@ int main(){
 		cout<<"3. Search for an element"<<endl;
 		cout<<"4. Print an image of the tree"<<endl;
 		cout<<"5. Insert a series of elements"<<endl;
+		cout<<"6. Clone a tree and print it."<<endl;
 		cout<<"\nPress 0 to quit.";
 		cout<<"\nEnter Your Choice: ";
 		cin>>choice;
@@ -522,6 +547,13 @@ int main(){
 					cin>>element2;
 					tree->AVL_Insert(element2);
 				}
+				break;
+			case 6:
+				cout<<"Cloning the tree..."<<endl;
+				clone = new AVL_Tree(*tree);
+				cout<<"Printing the tree. Check the filename cloned_graph.gv"<<endl;
+				clone->AVL_Print("cloned_graph.gv");
+				cout<<"Operation Successful. Please check the file cloned_graph.gv"<<endl;
 				break;
 			default:
 				cout<<"Incorrect Choice!"<<endl;
