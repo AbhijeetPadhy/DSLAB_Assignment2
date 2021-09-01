@@ -176,6 +176,7 @@ void AVL_Tree::AVL_Insert(int k){
 		T->RChild = P;
 	else
 		T->LChild = P;
+	root = dummy->RChild;
 	delete(dummy);
 }
 
