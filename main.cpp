@@ -5,6 +5,7 @@
  */
 
 #include<iostream>
+#include <stack>
 
 using namespace std;
 
@@ -23,10 +24,26 @@ class AVL_Node{
 	friend class AVL_Tree;
 };
 
+class Stack_Node{
+	public:
+		AVL_Node *node;
+		int a;
+	Stack_Node(){
+		node = NULL;
+		a = 0;
+	}
+	Stack_Node(AVL_Node *P, int n){
+		node = P;
+		a = n;
+	}
+};
+
 class AVL_Tree{
 	private:
 		AVL_Node *root;
 		int printTreeUtil(AVL_Node* node, FILE *fptr);
+		AVL_Node* AVL_Delete_util(AVL_Node *, int k);
+		bool if_height_reduced;
 	public:
 		AVL_Tree();
 		AVL_Tree(const AVL_Tree &T);
@@ -40,6 +57,7 @@ class AVL_Tree{
 
 AVL_Tree::AVL_Tree(){
 	root = NULL;
+	if_height_reduced = false;
 }
 
 AVL_Tree::AVL_Tree(const AVL_Tree &T){
@@ -56,6 +74,7 @@ void AVL_Tree::AVL_Insert(int k){
 	}
 	AVL_Node *P,*S,*Q, *R;
 	AVL_Node *T = new AVL_Node(-1);
+	AVL_Node *dummy = T;
 	T->RChild = root;
 	S = P = root;
 	bool flag = false;
@@ -157,11 +176,263 @@ void AVL_Tree::AVL_Insert(int k){
 		T->RChild = P;
 	else
 		T->LChild = P;
+	delete(dummy);
 }
 
+	// 1. Delete node only from leaf or if it has a single child, kind of using successor
+	// 2. Store the path in stack
+	// 3. Manage the bf as you move up the stack
+	// 4. Rebalancing might be required in a particular case which will be same as in insertion.
+
 void AVL_Tree::AVL_Delete(int k){
-	
+	stack<Stack_Node*> stack;
+	AVL_Node *P = root, *Q = NULL;
+	AVL_Node* dummy = new AVL_Node(0);
+	dummy->RChild = P;
+	Q = dummy;
+	stack.push(new Stack_Node(Q,+1));
+	while(P != NULL){
+		if(k < P->key){
+			// Visit left subtree
+			stack.push(new Stack_Node(P,-1));
+			cout<<"Pushing element: "<<P->key<<endl;
+			Q = P;
+			P = P->LChild;
+			
+		}else if(k > P->key){
+			// Visit right subtre
+			cout<<"Pushing element: "<<P->key<<endl;
+			stack.push(new Stack_Node(P,+1));
+			Q = P;
+			P = P->RChild;
+		}else{
+			// This is the node to be deleted
+			//case1: Leaf Node
+			if(P->LChild == NULL && P->RChild == NULL){
+				cout<<"Leaf Node!"<<Q->key;
+				// If root node is to be deleted
+				if(P == root){
+					root = NULL;
+				}
+				else if(k < Q->key){
+					Q->LChild = NULL;
+				}else{
+					Q->RChild = NULL;
+				}
+				delete(P);
+				P = NULL;
+			}
+			//case2: Node to be deleted has only one child
+			else if(P->LChild == NULL || P->RChild == NULL){
+				// If P has only right child
+				if(P->RChild != NULL){
+					// If root node is to be deleted
+					if(P == root){
+						root = P->RChild;
+					}
+					// If P is left child of Q
+					else if(P->key < Q->key){
+						Q->LChild = P->RChild;
+					}
+					// If P is right child of Q
+					else{
+						Q->RChild = P->RChild;
+					}
+				}
+				// If P has only left child
+				else{
+					// If root node is to be deleted
+					if(P == root){
+						root = P->LChild;
+					}
+					// If P is left child of Q
+					else if(P->key < Q->key){
+						Q->LChild = P->LChild;
+					}
+					// If P is right child of Q
+					else{
+						Q->RChild = P->LChild;
+					}
+				}
+				delete(P);
+				P = NULL;
+			}
+			//case3: Node to be deleted has two children
+			else{
+				// find successor
+				AVL_Node *cur = P->RChild;
+				cout<<"Starting from "<<cur->key<<endl;
+				while(cur->LChild != NULL)
+					cur = cur->LChild;
+				int a = cur->key;
+				AVL_Delete(cur->key);
+				P->key = a;
+				P = NULL;
+				return; // balancing is done once when  we deleted the successor. We arent deleting any more elements.
+			}
+		}
+	}
+	Stack_Node *temp;
+	while (!stack.empty()) {
+    	temp = stack.top();
+    	cout<<"element: "<<temp->node->key<<endl;
+    	stack.pop();
+    	if(temp->node == dummy)
+    		break;
+    	if(temp->node->bf == temp->a){
+    		temp->node->bf = 0;
+		}else if(temp->node->bf == 0){
+			temp->node->bf = -temp->a;
+			return;
+		}else if(temp->node->bf == -temp->a){
+			// Rebalancing is required!
+			Stack_Node *parent = stack.top();
+			if(temp->node->bf == 1 ){ // This means deletion occured on left sub tree and right sub tree has a higher length now
+				//temp = A
+				AVL_Node *right_child = temp->node->RChild;
+				// case 1a and case 3a: Single Left Rotation 
+				if(right_child->bf >= 0){ 
+					temp->node->RChild = right_child->LChild;
+					right_child->LChild = temp->node;
+					
+					if(parent->a == +1)
+						parent->node->RChild = right_child;
+					else if(parent->a == -1)
+						parent->node->LChild = right_child;
+					else
+						parent->node->RChild = right_child; // when parent is dummy!
+					// case 1a:
+					if(right_child->bf == 1){
+						temp->node->bf = 0;
+						right_child->bf = 0;
+					}
+					// case 3a: It is a part of case 1a with a slight modification in balance factors
+					else if(right_child->bf == 0){
+						temp->node->bf = +1;
+						right_child->bf = -1;
+					}
+				}
+				// case 2a: Right-Left Rotation
+				else{
+					//asigning names
+					AVL_Node * A = temp->node;
+					AVL_Node * B = temp->node->RChild;
+					AVL_Node * X = B->LChild;
+					AVL_Node * alpha = A->LChild;
+					AVL_Node * beta = X->LChild;
+					AVL_Node * gamma = X->RChild;
+					AVL_Node * delta = B->RChild;
+					
+					// rotating and handling links
+					X->LChild = A;
+					X->RChild = B;
+					
+					A->LChild = alpha;
+					A->RChild = beta;
+					
+					B->LChild = gamma;
+					B->RChild = delta;
+					
+					if(parent->a == +1)
+						parent->node->RChild = X;
+					else if(parent->a == -1)
+						parent->node->LChild = X;
+					else
+						parent->node->RChild = X; // when parent is dummy!
+					
+					// Correcting BF
+					if(X->bf == +1){
+						// alpha = h, beta = h-1, gamma = h, delta = h
+						A->bf = -1;
+						B->bf = 0;
+					}else if(X->bf == 0){
+						// alpha = h, beta = h, gamma = h, delta = h
+						A->bf = 0;
+						B->bf = 0;
+					}else if(X->bf == -1){
+						// alpha = h, beta = h, gamma = h-1, delta = h
+						A->bf = 0;
+						B->bf = 1;
+					}
+					X->bf = 0;	
+				}	
+			}else{
+				//temp = A
+				AVL_Node *left_child = temp->node->LChild;
+				// case 1b and 3b:
+				if(left_child->bf <= 0){ 
+					temp->node->LChild = left_child->RChild;
+					left_child->RChild = temp->node;
+					
+					if(parent->a == +1)
+						parent->node->RChild = left_child;
+					else if(parent->a == -1)
+						parent->node->LChild = left_child;
+					else
+						parent->node->RChild = left_child;
+					// case 1b:
+					if(left_child->bf == -1){
+						temp->node->bf = 0;
+						left_child->bf = 0;
+					}
+					// case 3b: It is a part of case 1b with a slight modification in balance factors
+					else if(left_child->bf == 0){
+						temp->node->bf = -1;
+						left_child->bf = +1;
+					}
+				}
+				// case 2b:
+				else{
+					//asigning names
+					AVL_Node * A = temp->node;
+					AVL_Node * B = A->LChild;
+					AVL_Node * X = B->RChild;
+					AVL_Node * alpha = A->RChild;
+					AVL_Node * beta = X->RChild;
+					AVL_Node * gamma = X->LChild;
+					AVL_Node * delta = B->LChild;
+					
+					// rotating and handling links
+					X->LChild = B;
+					X->RChild = A;
+					
+					A->LChild = beta;
+					A->RChild = alpha;
+					
+					B->LChild = delta;
+					B->RChild = gamma;
+					
+					if(parent->a == +1)
+						parent->node->RChild = X;
+					else if(parent->a == -1)
+						parent->node->LChild = X;
+					else
+						parent->node->RChild = X; // when parent is dummy!
+					
+					// Correcting BF
+					if(X->bf == +1){
+						// alpha = h, beta = h, gamma = h-1, delta = h
+						A->bf = 0;
+						B->bf = -1;
+					}else if(X->bf == 0){
+						// alpha = h, beta = h, gamma = h, delta = h
+						A->bf = 0;
+						B->bf = 0;
+					}else if(X->bf == -1){
+						// alpha = h, beta = h-1, gamma = h, delta = h
+						A->bf = 1;
+						B->bf = 0;
+					}
+					X->bf = 0;	
+				}
+			}
+		}
+    }
+    cout<<"END--"<< dummy->RChild <<endl;
+    root = dummy->RChild;
+    delete(dummy);
 }
+
 bool AVL_Tree::AVL_Search(int k){
 	
 }
@@ -184,8 +455,8 @@ int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
 void AVL_Tree::AVL_Print(const char *filename){
 	if(root == NULL){
 		cout<<"The Tree is empty, so nothing will be generated!\n";
-	}
 		return;
+	}
 	FILE *fptr;
 	fptr = fopen(filename,"w");
 	fprintf(fptr,"digraph G {\n");
