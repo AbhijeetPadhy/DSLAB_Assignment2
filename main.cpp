@@ -42,9 +42,9 @@ class AVL_Tree{
 	private:
 		AVL_Node *root;
 		int printTreeUtil(AVL_Node* node, FILE *fptr);
-		AVL_Node* AVL_Delete_util(AVL_Node *, int k);
 		bool AVL_Search_util(AVL_Node *node, int k);
 		AVL_Node* AVL_Clone(AVL_Node *node);
+		void AVL_ClearTree(AVL_Node *node);
 	public:
 		AVL_Tree();
 		AVL_Tree(const AVL_Tree &T);
@@ -76,7 +76,16 @@ AVL_Tree::AVL_Tree(const AVL_Tree &T){
 	root = NULL;
 	root = AVL_Clone(T.root);
 }
+
 AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
+	cout<<"Equal to operator overloading!!"<<endl;
+	if(this != &T){
+		cout<<"Different trees!"<<endl;
+		AVL_ClearTree(root);
+		root = NULL;
+		root = AVL_Clone(T.root);
+	}
+	return *this;
 }
 
 void AVL_Tree::AVL_Insert(int k){
@@ -490,17 +499,26 @@ void AVL_Tree::AVL_Print(const char *filename){
 	fclose(fptr);
 }
 
-//void AVL_Tree::AVL_ClearTree(){}
+void AVL_Tree::AVL_ClearTree(AVL_Node *node){
+	if(node == NULL)
+		return;
+	AVL_ClearTree(node->LChild);
+	AVL_ClearTree(node->RChild);
+	delete(node);
+	return;
+}
 
 AVL_Tree::~AVL_Tree(){
-	
+	cout<<"Destructing object..."<<endl;
+	AVL_ClearTree(root);
+	root = NULL;
 }
 
 int main(){
 	int choice = -1;
 	int element = -1, element2=-1;
 	char str[] = "graph.gv";
-	AVL_Tree *clone;
+	AVL_Tree *clone = NULL;
 	AVL_Tree *tree = new AVL_Tree();
 	do{
 		cout<<"\nThis is an implementation of AVL Tree"<<endl;
@@ -563,5 +581,8 @@ int main(){
 				break;
 		}
 	}while(choice != 0);
+	
+	delete(tree);
+	delete(clone);
 	return 0;
 }
