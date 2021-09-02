@@ -471,15 +471,15 @@ bool AVL_Tree::AVL_Search(int k){
 }
 
 int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
-	fprintf(fptr,"node%d [label = \"<f0> | <f1> %d / %d | <f2>\"];\n",node->key,node->key, node->bf);
+	fprintf(fptr,"%d [label = \"<f0> | <f1> %d / %d | <f2>\"];\n",node->key,node->key, node->bf);
 	if(node->LChild != NULL){
 		printTreeUtil(node->LChild, fptr);
-		fprintf(fptr,"\"node%d\":f0 -> \"node%d\":f1;\n",node->key,node->LChild->key);
+		fprintf(fptr,"\"%d\":f0 -> \"%d\":f1;\n",node->key,node->LChild->key);
 	}
 		
 	if(node->RChild != NULL){
 		printTreeUtil(node->RChild, fptr);
-		fprintf(fptr,"\"node%d\":f2 -> \"node%d\":f1;\n",node->key,node->RChild->key);
+		fprintf(fptr,"\"%d\":f2 -> \"%d\":f1;\n",node->key,node->RChild->key);
 	}
 	
 	return node->key;
