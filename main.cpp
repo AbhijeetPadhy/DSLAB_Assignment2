@@ -296,7 +296,7 @@ void AVL_Tree::AVL_Delete(int k){
     		temp->node->bf = 0;
 		}else if(temp->node->bf == 0){
 			temp->node->bf = temp->a;
-			return;
+			break;
 		}else if(temp->node->bf == temp->a){
 			// Rebalancing is required!
 			Stack_Node *parent = stack.top();
@@ -323,6 +323,7 @@ void AVL_Tree::AVL_Delete(int k){
 					else if(right_child->bf == 0){
 						temp->node->bf = -1;
 						right_child->bf = +1;
+						break;
 					}
 				}
 				// case 2a: Right-Left Rotation
@@ -392,6 +393,7 @@ void AVL_Tree::AVL_Delete(int k){
 					else if(left_child->bf == 0){
 						temp->node->bf = +1;
 						left_child->bf = -1;
+						break;
 					}
 				}
 				// case 2b:
@@ -441,7 +443,6 @@ void AVL_Tree::AVL_Delete(int k){
 			}
 		}
     }
-    cout<<"END--"<< dummy->RChild <<endl;
     root = dummy->RChild;
     delete(dummy);
 }
@@ -488,6 +489,9 @@ void AVL_Tree::AVL_Print(const char *filename){
 	fprintf(fptr,"}");
 	fclose(fptr);
 }
+
+//void AVL_Tree::AVL_ClearTree(){}
+
 AVL_Tree::~AVL_Tree(){
 	
 }
