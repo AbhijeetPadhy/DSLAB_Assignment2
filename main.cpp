@@ -77,7 +77,6 @@ AVL_Tree::AVL_Tree(const AVL_Tree &T){
 	root = AVL_Clone(T.root);
 }
 AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
-	
 }
 
 void AVL_Tree::AVL_Insert(int k){
@@ -131,22 +130,22 @@ void AVL_Tree::AVL_Insert(int k){
 	}
 	while(P != Q){
 		if(k < P->key){
-			P->bf = -1;
+			P->bf = 1;
 			P = P->LChild;
 		}else if(k > P->key){
-			P->bf = 1;
+			P->bf = -1;
 			P = P->RChild;
 		}
 	}
 	if(S->bf == 0){
-		S->bf = a;
+		S->bf = -a;
 		return;
 	}
-	else if(S->bf == -a){
+	else if(S->bf == a){
 		S->bf = 0;
 		return;
-	}else if(S->bf == a){
-		if(R->bf == a){
+	}else if(S->bf == -a){
+		if(R->bf == -a){
 			//A8
 			P = R;
 			if(a == -1){
@@ -157,7 +156,7 @@ void AVL_Tree::AVL_Insert(int k){
 				R->LChild = S;
 			}
 			S->bf = R->bf = 0;
-		}else if(R->bf == -a){
+		}else if(R->bf == a){
 			//A9
 			if(a == -1){
 				P = R->RChild;
@@ -172,15 +171,15 @@ void AVL_Tree::AVL_Insert(int k){
 				S->RChild = P->LChild;
 				P->LChild = S;
 			}
-			if(P->bf == a){
-				S->bf = -a;
+			if(P->bf == -a){
+				S->bf = a;
 				R->bf = 0;
 			}else if(P->bf == 0){
 				S->bf = 0;
 				R->bf = 0;
 			}else if(a == 1){
 				S->bf = 0;
-				R->bf = a;
+				R->bf = -a;
 			}
 			P->bf = 0;
 		}
@@ -293,19 +292,19 @@ void AVL_Tree::AVL_Delete(int k){
     	stack.pop();
     	if(temp->node == dummy)
     		break;
-    	if(temp->node->bf == temp->a){
+    	if(temp->node->bf == -temp->a){
     		temp->node->bf = 0;
 		}else if(temp->node->bf == 0){
-			temp->node->bf = -temp->a;
+			temp->node->bf = temp->a;
 			return;
-		}else if(temp->node->bf == -temp->a){
+		}else if(temp->node->bf == temp->a){
 			// Rebalancing is required!
 			Stack_Node *parent = stack.top();
-			if(temp->node->bf == 1 ){ // This means deletion occured on left sub tree and right sub tree has a higher length now
+			if(temp->node->bf == -1 ){ // This means deletion occured on left sub tree and right sub tree has a higher length now
 				//temp = A
 				AVL_Node *right_child = temp->node->RChild;
 				// case 1a and case 3a: Single Left Rotation 
-				if(right_child->bf >= 0){ 
+				if(right_child->bf <= 0){ 
 					temp->node->RChild = right_child->LChild;
 					right_child->LChild = temp->node;
 					
@@ -316,14 +315,14 @@ void AVL_Tree::AVL_Delete(int k){
 					else
 						parent->node->RChild = right_child; // when parent is dummy!
 					// case 1a:
-					if(right_child->bf == 1){
+					if(right_child->bf == -1){
 						temp->node->bf = 0;
 						right_child->bf = 0;
 					}
 					// case 3a: It is a part of case 1a with a slight modification in balance factors
 					else if(right_child->bf == 0){
-						temp->node->bf = +1;
-						right_child->bf = -1;
+						temp->node->bf = -1;
+						right_child->bf = +1;
 					}
 				}
 				// case 2a: Right-Left Rotation
@@ -355,18 +354,18 @@ void AVL_Tree::AVL_Delete(int k){
 						parent->node->RChild = X; // when parent is dummy!
 					
 					// Correcting BF
-					if(X->bf == +1){
+					if(X->bf == -1){
 						// alpha = h, beta = h-1, gamma = h, delta = h
-						A->bf = -1;
+						A->bf = +1;
 						B->bf = 0;
 					}else if(X->bf == 0){
 						// alpha = h, beta = h, gamma = h, delta = h
 						A->bf = 0;
 						B->bf = 0;
-					}else if(X->bf == -1){
+					}else if(X->bf == 1){
 						// alpha = h, beta = h, gamma = h-1, delta = h
 						A->bf = 0;
-						B->bf = 1;
+						B->bf = -1;
 					}
 					X->bf = 0;	
 				}	
@@ -374,7 +373,7 @@ void AVL_Tree::AVL_Delete(int k){
 				//temp = A
 				AVL_Node *left_child = temp->node->LChild;
 				// case 1b and 3b:
-				if(left_child->bf <= 0){ 
+				if(left_child->bf >= 0){ 
 					temp->node->LChild = left_child->RChild;
 					left_child->RChild = temp->node;
 					
@@ -385,14 +384,14 @@ void AVL_Tree::AVL_Delete(int k){
 					else
 						parent->node->RChild = left_child;
 					// case 1b:
-					if(left_child->bf == -1){
+					if(left_child->bf == +1){
 						temp->node->bf = 0;
 						left_child->bf = 0;
 					}
 					// case 3b: It is a part of case 1b with a slight modification in balance factors
 					else if(left_child->bf == 0){
-						temp->node->bf = -1;
-						left_child->bf = +1;
+						temp->node->bf = +1;
+						left_child->bf = -1;
 					}
 				}
 				// case 2b:
@@ -424,17 +423,17 @@ void AVL_Tree::AVL_Delete(int k){
 						parent->node->RChild = X; // when parent is dummy!
 					
 					// Correcting BF
-					if(X->bf == +1){
+					if(X->bf == -1){
 						// alpha = h, beta = h, gamma = h-1, delta = h
 						A->bf = 0;
-						B->bf = -1;
+						B->bf = +1;
 					}else if(X->bf == 0){
 						// alpha = h, beta = h, gamma = h, delta = h
 						A->bf = 0;
 						B->bf = 0;
-					}else if(X->bf == -1){
+					}else if(X->bf == +1){
 						// alpha = h, beta = h-1, gamma = h, delta = h
-						A->bf = 1;
+						A->bf = -1;
 						B->bf = 0;
 					}
 					X->bf = 0;	
