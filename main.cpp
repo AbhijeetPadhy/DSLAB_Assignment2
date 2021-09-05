@@ -123,6 +123,7 @@ void AVL_Tree::AVL_Insert(int k){
 		}	
 	}
 	if(flag == false){
+		delete(dummy);
 		throw "Element Already Exists Exception!";
 	}
 	if(k < S->key){
@@ -143,10 +144,12 @@ void AVL_Tree::AVL_Insert(int k){
 	}
 	if(S->bf == 0){
 		S->bf = -a;
+		delete(dummy);
 		return;
 	}
 	else if(S->bf == a){
 		S->bf = 0;
+		delete(dummy);
 		return;
 	}else if(S->bf == -a){
 		if(R->bf == -a){
