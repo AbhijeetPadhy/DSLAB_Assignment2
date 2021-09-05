@@ -55,6 +55,7 @@ AVL_Tree::AVL_Tree(){
 	root = NULL;
 }
 
+// function to make clone of a tree recursively
 AVL_Node* AVL_Tree::AVL_Clone(AVL_Node *node){
 	if(node == NULL)
 		return NULL;
@@ -72,10 +73,9 @@ AVL_Tree::AVL_Tree(const AVL_Tree &T){
 	root = AVL_Clone(T.root);
 }
 
+// assignment operator overloading
 AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
-	cout<<"Equal to operator overloading!!"<<endl;
 	if(this != &T){
-		cout<<"Different trees!"<<endl;
 		AVL_ClearTree(root);
 		root = NULL;
 		root = AVL_Clone(T.root);
@@ -83,6 +83,8 @@ AVL_Tree & AVL_Tree::operator=(const AVL_Tree &T){
 	return *this;
 }
 
+// function to insert an element
+// exception is thrown if we try to insert an element already present in the tree
 void AVL_Tree::AVL_Insert(int k){
 	if(root == NULL){
 		root = new AVL_Node(k);
@@ -216,13 +218,11 @@ void AVL_Tree::AVL_Delete(int k){
 		if(k < P->key){
 			// Visit left subtree
 			stk.push(new Stack_Node(P,-1));
-			cout<<"Pushing element: "<<P->key<<endl;
 			Q = P;
 			P = P->LChild;
 			
 		}else if(k > P->key){
 			// Visit right subtre
-			cout<<"Pushing element: "<<P->key<<endl;
 			stk.push(new Stack_Node(P,+1));
 			Q = P;
 			P = P->RChild;
@@ -230,7 +230,6 @@ void AVL_Tree::AVL_Delete(int k){
 			// This is the node to be deleted
 			//case1: Leaf Node
 			if(P->LChild == NULL && P->RChild == NULL){
-				cout<<"Leaf Node!"<<Q->key;
 				// If root node is to be deleted
 				if(P == root){
 					root = NULL;
@@ -526,7 +525,6 @@ void AVL_Tree::AVL_ClearTree(AVL_Node *node){
 }
 
 AVL_Tree::~AVL_Tree(){
-	cout<<"Destructing object..."<<endl;
 	AVL_ClearTree(root);
 	root = NULL;
 }
