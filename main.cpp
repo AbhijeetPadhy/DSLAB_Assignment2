@@ -211,7 +211,7 @@ void AVL_Tree::AVL_Delete(int k){
 	dummy->RChild = P;
 	Q = dummy;
 	stk.push(new Stack_Node(Q,+1));
-	Stack_Node *temp;
+	Stack_Node *temp = NULL;
 	while(P != NULL){
 		if(k < P->key){
 			// Visit left subtree
