@@ -233,6 +233,7 @@ void AVL_Tree::AVL_Delete(int k){
 				// If root node is to be deleted
 				if(P == root){
 					root = NULL;
+					Q->RChild = root;
 				}
 				else if(k < Q->key){
 					Q->LChild = NULL;
@@ -248,7 +249,9 @@ void AVL_Tree::AVL_Delete(int k){
 				if(P->RChild != NULL){
 					// If root node is to be deleted
 					if(P == root){
+						//If P points to root, Q points to dummy. The right child of dummy should point to the new root.
 						root = P->RChild;
+						Q->RChild = root;
 					}
 					// If P is left child of Q
 					else if(P->key < Q->key){
@@ -264,6 +267,7 @@ void AVL_Tree::AVL_Delete(int k){
 					// If root node is to be deleted
 					if(P == root){
 						root = P->LChild;
+						Q->RChild = root;
 					}
 					// If P is left child of Q
 					else if(P->key < Q->key){
