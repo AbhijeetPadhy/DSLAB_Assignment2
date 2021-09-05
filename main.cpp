@@ -205,16 +205,17 @@ void AVL_Tree::AVL_Insert(int k){
 	// 4. Rebalancing might be required in a particular case which will be same as in insertion.
 
 void AVL_Tree::AVL_Delete(int k){
-	stack<Stack_Node*> stack;
+	stack<Stack_Node*> stk;
 	AVL_Node *P = root, *Q = NULL;
 	AVL_Node* dummy = new AVL_Node(0);
 	dummy->RChild = P;
 	Q = dummy;
-	stack.push(new Stack_Node(Q,+1));
+	stk.push(new Stack_Node(Q,+1));
+	Stack_Node *temp;
 	while(P != NULL){
 		if(k < P->key){
 			// Visit left subtree
-			stack.push(new Stack_Node(P,-1));
+			stk.push(new Stack_Node(P,-1));
 			cout<<"Pushing element: "<<P->key<<endl;
 			Q = P;
 			P = P->LChild;
@@ -222,7 +223,7 @@ void AVL_Tree::AVL_Delete(int k){
 		}else if(k > P->key){
 			// Visit right subtre
 			cout<<"Pushing element: "<<P->key<<endl;
-			stack.push(new Stack_Node(P,+1));
+			stk.push(new Stack_Node(P,+1));
 			Q = P;
 			P = P->RChild;
 		}else{
@@ -292,15 +293,22 @@ void AVL_Tree::AVL_Delete(int k){
 				AVL_Delete(cur->key);
 				P->key = a;
 				P = NULL;
+				delete(dummy);
+				while(!stk.empty()){
+					temp = stk.top();
+					delete(temp);
+					stk.pop();
+				}
 				return; // balancing is done once when  we deleted the successor. We arent deleting any more elements.
 			}
 		}
 	}
-	Stack_Node *temp;
-	while (!stack.empty()) {
-    	temp = stack.top();
+	
+	while (!stk.empty()) {
+		delete(temp);
+    	temp = stk.top();
     	cout<<"element: "<<temp->node->key<<endl;
-    	stack.pop();
+    	stk.pop();
     	if(temp->node == dummy)
     		break;
     	if(temp->node->bf == -temp->a){
@@ -310,7 +318,7 @@ void AVL_Tree::AVL_Delete(int k){
 			break;
 		}else if(temp->node->bf == temp->a){
 			// Rebalancing is required!
-			Stack_Node *parent = stack.top();
+			Stack_Node *parent = stk.top();
 			if(temp->node->bf == -1 ){ // This means deletion occured on left sub tree and right sub tree has a higher length now
 				//temp = A
 				AVL_Node *right_child = temp->node->RChild;
@@ -456,6 +464,13 @@ void AVL_Tree::AVL_Delete(int k){
     }
     root = dummy->RChild;
     delete(dummy);
+    //deleting stack objects
+    delete(temp);
+    while(!stk.empty()){
+		temp = stk.top();
+		delete(temp);
+		stk.pop();
+	}
 }
 
 bool AVL_Tree::AVL_Search_util(AVL_Node *node, int k){
