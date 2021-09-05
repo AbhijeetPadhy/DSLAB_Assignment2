@@ -556,7 +556,12 @@ int main(){
 			case 1:
 				cout<<"Please enter the element you want to insert: ";
 				cin>>element;
-				tree->AVL_Insert(element);
+				try{
+					tree->AVL_Insert(element);
+				}catch(const char* msg){
+					cerr<<"\n---------WARNING----------"<<endl;
+					cerr<<"Exception caught at insert() method :: "<<msg<<endl;
+				}
 				break;
 			case 2:
 				cout<<"Please enter the element you want to delete: ";
