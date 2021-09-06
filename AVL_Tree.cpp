@@ -93,6 +93,7 @@ void AVL_Tree::AVL_Insert(int k){
 			P = Q;
 		}	
 	}
+	// If element already exists, throw an exception
 	if(flag == false){
 		delete(dummy);
 		throw "Element Already Exists Exception!";
@@ -274,7 +275,7 @@ void AVL_Tree::AVL_Delete(int k){
 			}
 		}
 	}
-	
+	// If element does not exist, throw an exception
 	if(deleted == false){
 		delete(dummy);
 		while(!stk.empty()){
@@ -284,7 +285,7 @@ void AVL_Tree::AVL_Delete(int k){
 		}
 		throw "Element Does Not Exist Exception!";
 	}
-	
+	// Traverse back the path to set balance factors and perform rotation if needed
 	while (!stk.empty()) {
 		delete(temp);
     	temp = stk.top();
@@ -441,18 +442,19 @@ void AVL_Tree::AVL_Delete(int k){
 				}
 			}
 		}
-    }
-    root = dummy->RChild;
-    delete(dummy);
-    //deleting stack objects
-    delete(temp);
-    while(!stk.empty()){
+	}
+	root = dummy->RChild;
+	delete(dummy);
+	//deleting stack objects
+	delete(temp);
+	while(!stk.empty()){
 		temp = stk.top();
 		delete(temp);
 		stk.pop();
 	}
 }
 
+// Utility Function to search for an element
 bool AVL_Tree::AVL_Search_util(AVL_Node *node, int k){
 	if(node == NULL)
 		return false;
@@ -463,10 +465,12 @@ bool AVL_Tree::AVL_Search_util(AVL_Node *node, int k){
 	return AVL_Search_util(node->RChild, k);
 }
 
+// Function to search for an element
 bool AVL_Tree::AVL_Search(int k){
 	return AVL_Search_util(root,k);
 }
 
+// Utility Function to print tree
 void AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
 	if(node == NULL)
 		return;
@@ -484,6 +488,7 @@ void AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
 	return;
 }
 
+// Function to print tree
 void AVL_Tree::AVL_Print(const char *filename){
 	FILE *fptr;
 	fptr = fopen(filename,"w");
@@ -494,6 +499,7 @@ void AVL_Tree::AVL_Print(const char *filename){
 	fclose(fptr);
 }
 
+// Function to recursively delete nodes of a tree
 void AVL_Tree::AVL_ClearTree(AVL_Node *node){
 	if(node == NULL)
 		return;
@@ -503,6 +509,7 @@ void AVL_Tree::AVL_ClearTree(AVL_Node *node){
 	return;
 }
 
+// Destructor
 AVL_Tree::~AVL_Tree(){
 	AVL_ClearTree(root);
 	root = NULL;
