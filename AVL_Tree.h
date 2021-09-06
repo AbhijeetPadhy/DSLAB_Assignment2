@@ -30,7 +30,7 @@ class Stack_Node{
 class AVL_Tree{
 	private:
 		AVL_Node *root;
-		int printTreeUtil(AVL_Node* node, FILE *fptr);
+		void printTreeUtil(AVL_Node* node, FILE *fptr);
 		bool AVL_Search_util(AVL_Node *node, int k);
 		AVL_Node* AVL_Clone(AVL_Node *node);
 		void AVL_ClearTree(AVL_Node *node);

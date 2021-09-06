@@ -439,7 +439,9 @@ bool AVL_Tree::AVL_Search(int k){
 	return AVL_Search_util(root,k);
 }
 
-int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
+void AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
+	if(node == NULL)
+		return;
 	fprintf(fptr,"%d [label = \"<f0> | <f1> %d / %d | <f2>\"];\n",node->key,node->key, node->bf);
 	if(node->LChild != NULL){
 		printTreeUtil(node->LChild, fptr);
@@ -451,14 +453,10 @@ int AVL_Tree::printTreeUtil(AVL_Node* node, FILE *fptr){
 		fprintf(fptr,"\"%d\":f2 -> \"%d\":f1;\n",node->key,node->RChild->key);
 	}
 	
-	return node->key;
+	return;
 }
 
 void AVL_Tree::AVL_Print(const char *filename){
-	if(root == NULL){
-		cout<<"The Tree is empty, so nothing will be generated!\n";
-		return;
-	}
 	FILE *fptr;
 	fptr = fopen(filename,"w");
 	fprintf(fptr,"digraph G {\n");
