@@ -102,3 +102,9 @@ Operation Successful. Please check the file cloned_graph.gv
 7. Quit
 Enter Your Choice: 0
 
+Clean Instructions  
+==================
+run the following command in terminal in the same directory as source code:  
+	make clean
+
+This is supposed to delete all files created during build process.
