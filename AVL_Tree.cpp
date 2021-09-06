@@ -259,7 +259,6 @@ void AVL_Tree::AVL_Delete(int k){
 	while (!stk.empty()) {
 		delete(temp);
     	temp = stk.top();
-    	cout<<"element: "<<temp->node->key<<endl;
     	stk.pop();
     	if(temp->node == dummy)
     		break;
