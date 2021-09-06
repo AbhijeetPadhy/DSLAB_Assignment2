@@ -4,6 +4,22 @@
 
 using namespace std;
 
+AVL_Node::AVL_Node(int k){
+	key = k;
+	bf = 0;
+	LChild = NULL;
+	RChild = NULL;
+}
+
+Stack_Node::Stack_Node(){
+	node = NULL;
+	a = 0;
+}
+Stack_Node::Stack_Node(AVL_Node *P, int n){
+	node = P;
+	a = n;
+}
+
 AVL_Tree::AVL_Tree(){
 	root = NULL;
 }

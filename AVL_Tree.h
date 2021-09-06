@@ -4,12 +4,7 @@ class AVL_Node{
 		int bf; //balance factor bf = height(left subtree) - height(right subtree)
 		AVL_Node *LChild, *RChild;
 	public:
-		AVL_Node(int k){
-			key = k;
-			bf = 0;
-			LChild = NULL;
-			RChild = NULL;
-		}
+		AVL_Node(int k);
 	friend class AVL_Tree;
 };
 
@@ -17,14 +12,8 @@ class Stack_Node{
 	public:
 		AVL_Node *node;
 		int a;
-	Stack_Node(){
-		node = NULL;
-		a = 0;
-	}
-	Stack_Node(AVL_Node *P, int n){
-		node = P;
-		a = n;
-	}
+		Stack_Node();
+		Stack_Node(AVL_Node *P, int n);
 };
 
 class AVL_Tree{
