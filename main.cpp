@@ -32,15 +32,23 @@ int main(){
 				cin>>element;
 				try{
 					tree->AVL_Insert(element);
+					cout<<"Element "<<element<<" has been successfully inserted!"<<endl;
 				}catch(const char* msg){
 					cerr<<"\n---------WARNING----------"<<endl;
-					cerr<<"Exception caught at insert() method :: "<<msg<<endl;
+					cerr<<"Exception caught at AVL_Insert() method :: "<<msg<<endl;
 				}
 				break;
 			case 2:
 				cout<<"Please enter the element you want to delete: ";
 				cin>>element;
-				tree->AVL_Delete(element);
+				try{
+					tree->AVL_Delete(element);
+					cout<<"Element "<<element<<" has been successfully deleted!"<<endl;
+				}catch(const char* msg){
+					cerr<<"\n---------WARNING----------"<<endl;
+					cerr<<"Exception caught at AVL_Delete() method :: "<<msg<<endl;
+				}
+				
 				break;
 			case 3:
 				cout<<"Please enter the element you want to search: ";

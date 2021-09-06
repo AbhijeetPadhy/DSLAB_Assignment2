@@ -167,6 +167,7 @@ void AVL_Tree::AVL_Delete(int k){
 	Q = dummy;
 	stk.push(new Stack_Node(Q,+1));
 	Stack_Node *temp = NULL;
+	bool deleted = false;
 	while(P != NULL){
 		if(k < P->key){
 			// Visit left subtree
@@ -195,6 +196,7 @@ void AVL_Tree::AVL_Delete(int k){
 				}
 				delete(P);
 				P = NULL;
+				deleted = true;
 			}
 			//case2: Node to be deleted has only one child
 			else if(P->LChild == NULL || P->RChild == NULL){
@@ -233,6 +235,7 @@ void AVL_Tree::AVL_Delete(int k){
 				}
 				delete(P);
 				P = NULL;
+				deleted = true;
 			}
 			//case3: Node to be deleted has two children
 			else{
@@ -254,6 +257,16 @@ void AVL_Tree::AVL_Delete(int k){
 				return; // balancing is done once when  we deleted the successor. We arent deleting any more elements.
 			}
 		}
+	}
+	
+	if(deleted == false){
+		delete(dummy);
+		while(!stk.empty()){
+			temp = stk.top();
+			delete(temp);
+			stk.pop();
+		}
+		throw "Element Does Not Exist Exception!";
 	}
 	
 	while (!stk.empty()) {
