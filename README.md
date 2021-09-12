@@ -51,10 +51,10 @@ Enter the required option and follow the steps shown in terminal. Examples of ea
 
 1. Insert an element
 
-	Enter Your Choice: 1
+Enter Your Choice: 1
 
-	------------------OPERATION-------------------
-	Please enter the element you want to insert: 12
+------------------OPERATION-------------------
+Please enter the element you want to insert: 12
 
 2. Delete an element
 
