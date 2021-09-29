@@ -156,7 +156,7 @@ void AVL_Tree::AVL_Insert(int k){
 			}else if(P->bf == 0){
 				S->bf = 0;
 				R->bf = 0;
-			}else if(a == 1){
+			}else if(P->bf == a){
 				S->bf = 0;
 				R->bf = -a;
 			}
